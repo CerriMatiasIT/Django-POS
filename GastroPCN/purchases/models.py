@@ -1,6 +1,7 @@
 from django.db import models
 from catalog.models import Proveedor, Producto
 from django.conf import settings
+from inventory.models import Inventario, MovimientoInventario
 
 class CompraEntrada(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
@@ -11,6 +12,33 @@ class CompraEntrada(models.Model):
 
     def __str__(self):
         return f"Entrada {self.id} - {self.proveedor}"
+    
+    def confirmar(self, usuario=None):
+        """
+        Confirma la entrada:
+        - Incrementa stock en Inventario.
+        - Registra MovimientoInventario.
+        - Calcula total de la entrada.
+        """
+        total = 0
+        for detalle in self.detalles.all():
+            # Actualizar stock
+            inv, _ = Inventario.objects.get_or_create(producto=detalle.producto)
+            inv.stock_actual += detalle.cantidad
+            inv.save()
+
+            # Registrar movimiento
+            MovimientoInventario.objects.create(
+                producto=detalle.producto,
+                tipo="entrada",
+                cantidad=detalle.cantidad,
+                referencia=f"Entrada {self.id}"
+            )
+
+            total += detalle.costo_unitario * detalle.cantidad
+
+        self.total = total
+        self.save()
 
 
 class DetalleEntrada(models.Model):
