@@ -1,11 +1,13 @@
 from django.db import models
 from catalog.models import Proveedor, Producto
+from django.conf import settings
 
 class CompraEntrada(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     observaciones = models.TextField(blank=True, null=True)
+    creada_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"Entrada {self.id} - {self.proveedor}"
