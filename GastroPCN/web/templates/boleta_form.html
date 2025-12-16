@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Nueva Boleta</title></head>
+<body>
+  <h1>Crear Boleta</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label>Cliente:</label>
+    <select name="cliente"><option>Cliente Z</option></select>
+    <label>Producto:</label>
+    <select name="producto"><option>Cocina Premium</option></select>
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" value="2">
+    <button type="submit">Crear</button>
+  </form>
+  <p>Boleta creada</p>
+</body>
+</html>
